@@ -1,0 +1,11 @@
+trainer:
+  backend: TensorflowBackend
+model:
+  .models.tensorflow.Model:
+    repr: ${repr}
+    node_level: ${node_level}
+    in_channels: ${in_channels}
+    out_channels: ${out_channels}
+    loss: ${loss}
+    learning_rate: ${learning_rate}
+    resolution: ${resolution}

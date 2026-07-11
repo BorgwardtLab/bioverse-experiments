@@ -1,0 +1,45 @@
+in_channels: [117, 272]
+transforms:
+  - ResiduePositions:
+      mode: CA
+  - TokenizeResidues:
+  - ResidueBackboneAtoms:
+  - ResiduePseudoCb:
+live_transforms:
+  - KnnGraph:
+      k: 30
+      resolution: residue
+  - ResidueFrames:
+  - Dihedrals:
+  - BackboneBondAngles:
+  - BackboneNodeRbf:
+      D_min: 0.0
+      D_max: 20.0
+      D_count: 16
+  - ResidueLocalDirections:
+  - EdgeLocalDirections:
+  - RelativeEdgeFramePositions:
+  - BackboneEdgeRbf:
+      D_min: 0.0
+      D_max: 20.0
+      D_count: 16
+      feature_type: pifold
+  - Orientations:
+  - Sidechains:
+  - EdgeVectors:
+  - Rbf:
+  - CreateFeatureFromOthers:
+      feature_level: vertex
+      source_attrs:
+        - residue_dihedrals
+        - residue_bond_angles
+        - residue_direct
+        - residue_node_rbf
+      target_attr: residue_features
+  - CreateFeatureFromOthers:
+      feature_level: edge
+      source_attrs:
+        - molecule_edge_rbf_all
+        - molecule_edge_quaternions
+        - molecule_edge_direct
+      target_attr: molecule_edge_features

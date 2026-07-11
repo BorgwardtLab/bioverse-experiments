@@ -1,0 +1,73 @@
+dataset,metric,model,feature,value_percent
+inv,Recovery,gvp,,24.586995520278396
+inv,Recovery,gvp,,24.26854254362579
+inv,Recovery,gvp,unified,26.352266178590465
+inv,Recovery,gvp,unified,25.79395783073754
+inv,Recovery,gvp,meso,26.031927907061515
+inv,Recovery,gvp,meso,26.456659435073405
+inv,Recovery,mpnn,,21.227307550396425
+inv,Recovery,mpnn,,16.97266346263573
+inv,Recovery,mpnn,unified,21.45249915175124
+inv,Recovery,mpnn,unified,20.11907642986076
+inv,Recovery,mpnn,meso,19.377274781438103
+inv,Recovery,mpnn,meso,21.381027640185106
+inv,Recovery,pifold,,35.60670118418711
+inv,Recovery,pifold,,35.85220734768007
+inv,Recovery,pifold,unified,36.0399975671798
+inv,Recovery,pifold,unified,33.67281152534948
+inv,Recovery,pifold,meso,35.23503274976183
+inv,Recovery,pifold,meso,34.67789013930827
+inv,Top-2 Recovery,gvp,,37.09262674973894
+inv,Top-2 Recovery,gvp,,36.82254201769488
+inv,Top-2 Recovery,gvp,unified,38.93537780274226
+inv,Top-2 Recovery,gvp,unified,38.88680574027839
+inv,Top-2 Recovery,gvp,meso,39.79574359871594
+inv,Top-2 Recovery,gvp,meso,39.93077797295246
+inv,Top-2 Recovery,mpnn,,33.81378437316446
+inv,Top-2 Recovery,mpnn,,29.81486438322061
+inv,Top-2 Recovery,mpnn,unified,33.508227879556
+inv,Top-2 Recovery,mpnn,unified,33.764578721958685
+inv,Top-2 Recovery,mpnn,meso,35.35350752802336
+inv,Top-2 Recovery,mpnn,meso,35.5062792776814
+inv,Top-2 Recovery,pifold,,49.55730287536936
+inv,Top-2 Recovery,pifold,,49.43681141762206
+inv,Top-2 Recovery,pifold,unified,49.45319705411166
+inv,Top-2 Recovery,pifold,unified,46.13603822720368
+inv,Top-2 Recovery,pifold,meso,48.71354398519724
+inv,Top-2 Recovery,pifold,meso,48.725389714415904
+srf,Recovery,gvp,,23.541269245689776
+srf,Recovery,gvp,,23.24012495827802
+srf,Recovery,gvp,unified,24.193514538602308
+srf,Recovery,gvp,unified,24.745238055153347
+srf,Recovery,gvp,meso,23.96984931036966
+srf,Recovery,gvp,meso,24.14011309079125
+srf,Recovery,mpnn,,20.431215172759938
+srf,Recovery,mpnn,,19.447728725258713
+srf,Recovery,mpnn,unified,18.489367490938182
+srf,Recovery,mpnn,unified,21.509862648061013
+srf,Recovery,mpnn,meso,16.913679189305768
+srf,Recovery,mpnn,meso,18.933816725449347
+srf,Recovery,pifold,,32.92348649464289
+srf,Recovery,pifold,,31.07829065201108
+srf,Recovery,pifold,unified,31.132789812684393
+srf,Recovery,pifold,unified,32.158565481649106
+srf,Recovery,pifold,meso,30.76311592929905
+srf,Recovery,pifold,meso,32.00174659400792
+srf,Top-2 Recovery,gvp,,35.24952129221643
+srf,Top-2 Recovery,gvp,,34.93777473362237
+srf,Top-2 Recovery,gvp,unified,36.455033100078445
+srf,Top-2 Recovery,gvp,unified,36.422418409963804
+srf,Top-2 Recovery,gvp,meso,34.344877582327996
+srf,Top-2 Recovery,gvp,meso,37.33389835301489
+srf,Top-2 Recovery,mpnn,,33.409578494171114
+srf,Top-2 Recovery,mpnn,,30.273316288508735
+srf,Top-2 Recovery,mpnn,unified,31.140623139146363
+srf,Top-2 Recovery,mpnn,unified,32.64111046197194
+srf,Top-2 Recovery,mpnn,meso,28.495413359051536
+srf,Top-2 Recovery,mpnn,meso,32.28119821337355
+srf,Top-2 Recovery,pifold,,45.817822909407916
+srf,Top-2 Recovery,pifold,,44.85887150814188
+srf,Top-2 Recovery,pifold,unified,44.34419313965843
+srf,Top-2 Recovery,pifold,unified,44.83718344802459
+srf,Top-2 Recovery,pifold,meso,44.14294019196514
+srf,Top-2 Recovery,pifold,meso,44.64925155431644

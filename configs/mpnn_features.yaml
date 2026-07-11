@@ -1,0 +1,29 @@
+in_channels: [117, 416]
+transforms:
+  - ResiduePositions:
+      mode: CA
+  - TokenizeResidues:
+  - ResidueBackboneAtoms:
+live_transforms:
+  - ResiduePseudoCb:
+  - KnnGraph:
+      k: 30
+      resolution: residue
+  - ResidueFrames:
+  - Dihedrals:
+  - Orientations:
+  - Sidechains:
+  - EdgeVectors:
+  - Rbf:
+  - BackboneEdgeRbf:
+      D_min: 2.0
+      D_max: 22.0
+      D_count: 16
+      feature_type: mpnn
+  - EdgePosEmb:
+  - CreateFeatureFromOthers:
+      feature_level: edge
+      source_attrs:
+        - molecule_edge_pos_emb
+        - molecule_edge_rbf_all
+      target_attr: molecule_edge_features

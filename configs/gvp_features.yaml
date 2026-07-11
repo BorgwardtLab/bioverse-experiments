@@ -1,0 +1,25 @@
+in_channels: [6, 32]
+transforms:
+  - ResiduePositions:
+  - TokenizeResidues:
+  - ResidueBackboneAtoms:
+  - KnnGraph:
+      k: 8
+      resolution: residue
+  - Dihedrals:
+  - Orientations:
+  - Sidechains:
+  - EdgeVectors:
+  - Rbf:
+  - EdgePosEmb:
+  - CreateFeatureFromOthers:
+      feature_level: vertex
+      source_attrs:
+        - residue_dihedrals
+      target_attr: residue_features
+  - CreateFeatureFromOthers:
+      feature_level: edge
+      source_attrs:
+        - molecule_edge_rbf
+        - molecule_edge_pos_emb
+      target_attr: molecule_edge_features

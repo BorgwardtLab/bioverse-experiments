@@ -1,0 +1,19 @@
+seed: 42
+globals:
+  workers: 1
+trainer:
+  backend: TorchBackend
+  root: results/${name}
+  logger: DiskLogger
+  validate_every: 1.0
+  epochs: 3
+  accelerator: gpu
+  devices: 1
+  workers: 1
+  precision: 32
+  strategy: auto
+  accumulate_gradients: 1
+  checkpoint_every: 1
+  batch_size: ${batch_size}
+  batch_on: ${batch_on}
+  random_seed: ${seed}

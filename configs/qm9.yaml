@@ -1,0 +1,22 @@
+name: qm9
+batch_size: 128
+batch_on: molecules
+in_channels: 5
+out_channels: 1
+loss: l1_loss
+learning_rate: 0.001
+node_level: false
+resolution: atom
+benchmark: B_QM9APH
+transforms:
+  - TokenizeAtoms:
+      alphabet: HCNOF
+  - OneHotAtomFeatures:
+      alphabet: HCNOF
+  - Standardize:
+      field: molecule_alpha
+  - KnnGraph:
+      k: 8
+      resolution: atom
+  - LocalReferenceFrames:
+      resolution: atom

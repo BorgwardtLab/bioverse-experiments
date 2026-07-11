@@ -1,0 +1,19 @@
+name: srf
+batch_size: 32
+batch_on: molecules
+in_channels: 1
+out_channels: 20
+loss: cross_entropy
+learning_rate: 0.001
+node_level: true
+resolution: residue
+benchmark: B_SRFC42
+transforms:
+  - ResiduePositions:
+  - TokenizeResidues:
+  - ResidueBackboneAtoms:
+  - KnnGraph:
+      k: 8
+      resolution: residue
+  - LocalReferenceFrames:
+      resolution: residue
