@@ -75,6 +75,29 @@ def parse_experiment_name(exp_name: str) -> Tuple[str, str, str, int]:
     return model, feature, dataset, seed
 
 
+def collect_results_from_source_csv() -> Dict[str, Dict[str, Dict[str, Dict[str, List[float]]]]]:
+    """
+    Fallback loader for archived source data when raw experiment outputs
+    are not available locally.
+    """
+    path = os.path.join(FIGURES_DIR, "source_data_plot2.csv")
+    results: Dict[str, Dict[str, Dict[str, Dict[str, List[float]]]]] = defaultdict(
+        lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    )
+
+    with open(path, "r", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            dataset = row["dataset"]
+            metric = row["metric"]
+            model = row["model"]
+            feature = row["feature"]
+            value = float(row["value_percent"]) / 100.0
+            results[dataset][metric][model][feature].append(value)
+
+    return results
+
+
 def collect_results() -> Dict[str, Dict[str, Dict[str, Dict[str, List[float]]]]]:
     """
     Aggregate metric values:
@@ -150,9 +173,7 @@ def build_figure(
         vertical_spacing=0.16,
     )
 
-    # Configure bar mode and layout
     fig.update_layout(
-        barmode="group",
         template="plotly_white",
         font=dict(
             family="DejaVu Sans Mono, Menlo, Monaco, Consolas, monospace", size=12
@@ -168,96 +189,75 @@ def build_figure(
         margin=dict(l=60, r=20, t=80, b=60),
     )
 
-    # Add bars
     show_legend_for_feature = {f: True for f in FEATURES}
 
-    # Numeric x-positions for models so we can precisely align bars and points
+    # Numeric x-positions for models so we can precisely align boxes and points
     model_positions = {model: idx for idx, model in enumerate(MODELS)}
     tickvals = [model_positions[m] for m in MODELS]
     ticktext = [MODEL_LABELS[m] for m in MODELS]
     # Horizontal offsets for each feature within a model group
-    bar_half_width = 0.25
+    group_spacing = 0.22
     feature_offsets = {
-        "": -bar_half_width,
+        "": -group_spacing,
         "unified": 0.0,
-        "meso": bar_half_width,
+        "meso": group_spacing,
     }
+    # Keep boxes narrower than the spacing so grouped features do not overlap
+    box_width = 0.16
 
-    # Track global maximum (in percent) across all panels to set shared y-axis
-    global_max_value: float = 0.0
+    # Track global min/max (in percent) across all panels to set shared y-axis
+    global_min_value = float("inf")
+    global_max_value = float("-inf")
 
     for row_idx, dataset in enumerate(DATASETS, start=1):
         for col_idx, metric in enumerate(METRICS, start=1):
-            # For each feature, add bar + overlaid point traces per subplot (dataset, metric)
             for feature in FEATURES:
-                means: List[float] = []
-                stds: List[float] = []
-                values_by_model: List[Tuple[str, np.ndarray]] = []
+                feature_label = FEATURE_LABELS[feature]
                 for model in MODELS:
                     values = results[dataset][metric][model].get(feature, [])
-                    if values:
-                        arr = np.asarray(values, dtype=float) * 100.0
-                        means.append(float(arr.mean()))
-                        stds.append(float(arr.std(ddof=1)) if len(arr) > 1 else 0.0)
-                        values_by_model.append((model, arr))
-                        # Update global maximum
-                        local_max = float(arr.max())
-                        if local_max > global_max_value:
-                            global_max_value = local_max
-                    else:
-                        means.append(np.nan)
-                        stds.append(0.0)
-                        values_by_model.append((model, np.asarray([], dtype=float)))
-
-                feature_label = FEATURE_LABELS[feature]
-                # x-positions for bars for this feature across models
-                x_bar = [
-                    model_positions[model] + feature_offsets[feature]
-                    for model in MODELS
-                ]
-                fig.add_trace(
-                    go.Bar(
-                        x=x_bar,
-                        y=means,
-                        error_y=dict(
-                            type="data",
-                            array=stds,
-                            visible=True,
-                        ),
-                        name=feature_label,
-                        marker_color=FEATURE_COLORS[feature],
-                        showlegend=show_legend_for_feature[feature],
-                    ),
-                    row=row_idx,
-                    col=col_idx,
-                )
-
-                # Overlay strip/point plot of individual data points (as scatter markers)
-                xs: List[float] = []
-                ys: List[float] = []
-                for model, arr in values_by_model:
-                    if arr.size == 0:
+                    if not values:
                         continue
-                    x_pos = model_positions[model] + feature_offsets[feature]
-                    xs.extend([x_pos] * len(arr))
-                    ys.extend(arr.tolist())
 
-                if xs:
+                    arr = np.asarray(values, dtype=float) * 100.0
+                    local_min = float(arr.min())
+                    local_max = float(arr.max())
+                    if local_min < global_min_value:
+                        global_min_value = local_min
+                    if local_max > global_max_value:
+                        global_max_value = local_max
+
+                    x_pos = model_positions[model] + feature_offsets[feature]
+                    fig.add_trace(
+                        go.Box(
+                            x=[x_pos] * len(arr),
+                            y=arr.tolist(),
+                            name=feature_label,
+                            fillcolor=FEATURE_COLORS[feature],
+                            line_color=FEATURE_COLORS[feature],
+                            opacity=0.85,
+                            width=box_width,
+                            boxpoints=False,
+                            showlegend=show_legend_for_feature[feature],
+                        ),
+                        row=row_idx,
+                        col=col_idx,
+                    )
                     fig.add_trace(
                         go.Scatter(
-                            x=xs,
-                            y=ys,
+                            x=[x_pos] * len(arr),
+                            y=arr.tolist(),
                             mode="markers",
                             name=feature_label,
-                            marker=dict(color="rgba(196, 164, 132, 1.0)", size=4),
+                            marker=dict(
+                                color="rgba(196, 164, 132, 1.0)", size=4
+                            ),
                             showlegend=False,
                         ),
                         row=row_idx,
                         col=col_idx,
                     )
 
-                # Only show each legend entry once for the whole figure
-                show_legend_for_feature[feature] = False
+                    show_legend_for_feature[feature] = False
 
             # Axis styling for each subplot (shared y-range set after loop)
             if col_idx == 1:
@@ -284,12 +284,16 @@ def build_figure(
                 col=col_idx,
             )
 
-    # After all data processed, set a shared dynamic y-range for all subplots
-    if global_max_value > 0:
-        ymax = global_max_value * 1.05  # 5% headroom
+    # After all data processed, set a shared y-range from global min-max with margin
+    if global_max_value > global_min_value:
+        data_range = global_max_value - global_min_value
+        margin = data_range * 0.05
+        ymin = global_min_value - margin
+        ymax = global_max_value + margin
     else:
-        ymax = 1.0
-    fig.update_yaxes(range=[0.0, ymax])
+        ymin = global_min_value - 1.0
+        ymax = global_max_value + 1.0
+    fig.update_yaxes(range=[ymin, ymax])
 
     return fig
 
@@ -297,9 +301,13 @@ def build_figure(
 def main() -> None:
     ensure_figures_dir()
     results = collect_results()
+    if not results:
+        results = collect_results_from_source_csv()
 
     if not results:
-        raise RuntimeError(f"No results found under {RESULTS_DIR}")
+        raise RuntimeError(
+            f"No results found under {RESULTS_DIR} or {FIGURES_DIR}/source_data_plot2.csv"
+        )
 
     export_source_data(results)
 
