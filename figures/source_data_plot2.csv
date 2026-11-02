@@ -1,73 +1,271 @@
-dataset,metric,model,feature,value_percent
-inv,Recovery,gvp,,24.586995520278396
-inv,Recovery,gvp,,24.26854254362579
-inv,Recovery,gvp,unified,26.352266178590465
-inv,Recovery,gvp,unified,25.79395783073754
-inv,Recovery,gvp,meso,26.031927907061515
-inv,Recovery,gvp,meso,26.456659435073405
-inv,Recovery,mpnn,,21.227307550396425
-inv,Recovery,mpnn,,16.97266346263573
-inv,Recovery,mpnn,unified,21.45249915175124
-inv,Recovery,mpnn,unified,20.11907642986076
-inv,Recovery,mpnn,meso,19.377274781438103
-inv,Recovery,mpnn,meso,21.381027640185106
-inv,Recovery,pifold,,35.60670118418711
-inv,Recovery,pifold,,35.85220734768007
-inv,Recovery,pifold,unified,36.0399975671798
-inv,Recovery,pifold,unified,33.67281152534948
-inv,Recovery,pifold,meso,35.23503274976183
-inv,Recovery,pifold,meso,34.67789013930827
-inv,Top-2 Recovery,gvp,,37.09262674973894
-inv,Top-2 Recovery,gvp,,36.82254201769488
-inv,Top-2 Recovery,gvp,unified,38.93537780274226
-inv,Top-2 Recovery,gvp,unified,38.88680574027839
-inv,Top-2 Recovery,gvp,meso,39.79574359871594
-inv,Top-2 Recovery,gvp,meso,39.93077797295246
-inv,Top-2 Recovery,mpnn,,33.81378437316446
-inv,Top-2 Recovery,mpnn,,29.81486438322061
-inv,Top-2 Recovery,mpnn,unified,33.508227879556
-inv,Top-2 Recovery,mpnn,unified,33.764578721958685
-inv,Top-2 Recovery,mpnn,meso,35.35350752802336
-inv,Top-2 Recovery,mpnn,meso,35.5062792776814
-inv,Top-2 Recovery,pifold,,49.55730287536936
-inv,Top-2 Recovery,pifold,,49.43681141762206
-inv,Top-2 Recovery,pifold,unified,49.45319705411166
-inv,Top-2 Recovery,pifold,unified,46.13603822720368
-inv,Top-2 Recovery,pifold,meso,48.71354398519724
-inv,Top-2 Recovery,pifold,meso,48.725389714415904
-srf,Recovery,gvp,,23.541269245689776
-srf,Recovery,gvp,,23.24012495827802
-srf,Recovery,gvp,unified,24.193514538602308
-srf,Recovery,gvp,unified,24.745238055153347
-srf,Recovery,gvp,meso,23.96984931036966
-srf,Recovery,gvp,meso,24.14011309079125
-srf,Recovery,mpnn,,20.431215172759938
-srf,Recovery,mpnn,,19.447728725258713
-srf,Recovery,mpnn,unified,18.489367490938182
-srf,Recovery,mpnn,unified,21.509862648061013
-srf,Recovery,mpnn,meso,16.913679189305768
-srf,Recovery,mpnn,meso,18.933816725449347
-srf,Recovery,pifold,,32.92348649464289
-srf,Recovery,pifold,,31.07829065201108
-srf,Recovery,pifold,unified,31.132789812684393
-srf,Recovery,pifold,unified,32.158565481649106
-srf,Recovery,pifold,meso,30.76311592929905
-srf,Recovery,pifold,meso,32.00174659400792
-srf,Top-2 Recovery,gvp,,35.24952129221643
-srf,Top-2 Recovery,gvp,,34.93777473362237
-srf,Top-2 Recovery,gvp,unified,36.455033100078445
-srf,Top-2 Recovery,gvp,unified,36.422418409963804
-srf,Top-2 Recovery,gvp,meso,34.344877582327996
-srf,Top-2 Recovery,gvp,meso,37.33389835301489
-srf,Top-2 Recovery,mpnn,,33.409578494171114
-srf,Top-2 Recovery,mpnn,,30.273316288508735
-srf,Top-2 Recovery,mpnn,unified,31.140623139146363
-srf,Top-2 Recovery,mpnn,unified,32.64111046197194
-srf,Top-2 Recovery,mpnn,meso,28.495413359051536
-srf,Top-2 Recovery,mpnn,meso,32.28119821337355
-srf,Top-2 Recovery,pifold,,45.817822909407916
-srf,Top-2 Recovery,pifold,,44.85887150814188
-srf,Top-2 Recovery,pifold,unified,44.34419313965843
-srf,Top-2 Recovery,pifold,unified,44.83718344802459
-srf,Top-2 Recovery,pifold,meso,44.14294019196514
-srf,Top-2 Recovery,pifold,meso,44.64925155431644
+train,eval,model,feature,value
+inv,inv,gvp,gvp,0.36543597705359343
+inv,inv,gvp,gvp,0.3661108944434546
+inv,inv,gvp,gvp,0.36662958144916574
+inv,inv,gvp,gvp,0.368642667438173
+inv,inv,gvp,gvp,0.3674494920573719
+inv,inv,gvp,mpnn,0.38650211839346854
+inv,inv,gvp,mpnn,0.3876407272004627
+inv,inv,gvp,mpnn,0.38418248739768623
+inv,inv,gvp,mpnn,0.387825029788397
+inv,inv,gvp,mpnn,0.38546709743227525
+inv,inv,gvp,pifold,0.39325684128310195
+inv,inv,gvp,pifold,0.39828929934557444
+inv,inv,gvp,pifold,0.3992474451648032
+inv,inv,gvp,pifold,0.39888352603508276
+inv,inv,gvp,pifold,0.39815251657596945
+inv,inv,mpnn,gvp,0.2822237969123392
+inv,inv,mpnn,gvp,0.2825209835367743
+inv,inv,mpnn,gvp,0.2808955005120811
+inv,inv,mpnn,gvp,0.2763417637783861
+inv,inv,mpnn,gvp,0.2783922528610958
+inv,inv,mpnn,mpnn,0.34783805907130066
+inv,inv,mpnn,mpnn,0.3458603969136242
+inv,inv,mpnn,mpnn,0.34660264724903567
+inv,inv,mpnn,mpnn,0.3482061925950135
+inv,inv,mpnn,mpnn,0.3444843725810898
+inv,inv,mpnn,pifold,0.34759360464526073
+inv,inv,mpnn,pifold,0.34305667035938125
+inv,inv,mpnn,pifold,0.34344169854655265
+inv,inv,mpnn,pifold,0.3478432367625161
+inv,inv,mpnn,pifold,0.34485490311707595
+inv,inv,pifold,gvp,0.3160700769588629
+inv,inv,pifold,gvp,0.31749103857621336
+inv,inv,pifold,gvp,0.3160100312476758
+inv,inv,pifold,gvp,0.3194821342223725
+inv,inv,pifold,gvp,0.31605672125224904
+inv,inv,pifold,mpnn,0.38949342645752866
+inv,inv,pifold,mpnn,0.3928814280066263
+inv,inv,pifold,mpnn,0.3949640862621769
+inv,inv,pifold,mpnn,0.3909782181144516
+inv,inv,pifold,mpnn,0.3876351954540862
+inv,inv,pifold,pifold,0.3992698266815327
+inv,inv,pifold,pifold,0.4001710607391828
+inv,inv,pifold,pifold,0.3994325380126982
+inv,inv,pifold,pifold,0.40008729364722684
+inv,inv,pifold,pifold,0.398684404103004
+inv,afcath,gvp,gvp,0.3837090507546862
+inv,afcath,gvp,gvp,0.38175930374904277
+inv,afcath,gvp,gvp,0.38082584296534394
+inv,afcath,gvp,gvp,0.3817456824701684
+inv,afcath,gvp,gvp,0.38567220536655544
+inv,afcath,gvp,mpnn,0.40142376174497874
+inv,afcath,gvp,mpnn,0.3987990854731821
+inv,afcath,gvp,mpnn,0.3910942437421759
+inv,afcath,gvp,mpnn,0.4034842835473755
+inv,afcath,gvp,mpnn,0.39992076692134315
+inv,afcath,gvp,pifold,0.40091102146587554
+inv,afcath,gvp,pifold,0.4004043312037855
+inv,afcath,gvp,pifold,0.4087959275458284
+inv,afcath,gvp,pifold,0.3981070037338268
+inv,afcath,gvp,pifold,0.4078337791680622
+inv,afcath,mpnn,gvp,0.29369461290737875
+inv,afcath,mpnn,gvp,0.29942849720036624
+inv,afcath,mpnn,gvp,0.2950570001607204
+inv,afcath,mpnn,gvp,0.2884706437117924
+inv,afcath,mpnn,gvp,0.2895750705101242
+inv,afcath,mpnn,mpnn,0.36375502558246314
+inv,afcath,mpnn,mpnn,0.359407792787213
+inv,afcath,mpnn,mpnn,0.3605981269216356
+inv,afcath,mpnn,mpnn,0.36580868844689385
+inv,afcath,mpnn,mpnn,0.3653796553288571
+inv,afcath,mpnn,pifold,0.36501372457044756
+inv,afcath,mpnn,pifold,0.3602702402528094
+inv,afcath,mpnn,pifold,0.36044910545765074
+inv,afcath,mpnn,pifold,0.3657934917653731
+inv,afcath,mpnn,pifold,0.3631942153535944
+inv,afcath,pifold,gvp,0.32352609785804465
+inv,afcath,pifold,gvp,0.3265609764355967
+inv,afcath,pifold,gvp,0.3239139214016424
+inv,afcath,pifold,gvp,0.3282227724622918
+inv,afcath,pifold,gvp,0.3237413686861939
+inv,afcath,pifold,mpnn,0.4230600892492595
+inv,afcath,pifold,mpnn,0.41273582510460516
+inv,afcath,pifold,mpnn,0.44744426250929376
+inv,afcath,pifold,mpnn,0.43323471882027653
+inv,afcath,pifold,mpnn,0.4138262265021837
+inv,afcath,pifold,pifold,0.4607083638523412
+inv,afcath,pifold,pifold,0.45159210248942055
+inv,afcath,pifold,pifold,0.4333262414436686
+inv,afcath,pifold,pifold,0.44632926969263076
+inv,afcath,pifold,pifold,0.4352535596264254
+afcath,inv,gvp,gvp,0.22166887555483375
+afcath,inv,gvp,gvp,0.21880496155562446
+afcath,inv,gvp,gvp,0.21719189590200355
+afcath,inv,gvp,gvp,0.2273546800706191
+afcath,inv,gvp,gvp,0.22932937498100867
+afcath,inv,gvp,mpnn,0.16690034686295338
+afcath,inv,gvp,mpnn,0.17371181057554583
+afcath,inv,gvp,mpnn,0.16695485051485867
+afcath,inv,gvp,mpnn,0.17079150656685707
+afcath,inv,gvp,mpnn,0.16593751248913546
+afcath,inv,gvp,pifold,0.1643987494617973
+afcath,inv,gvp,pifold,0.1609645112170306
+afcath,inv,gvp,pifold,0.15729890174150085
+afcath,inv,gvp,pifold,0.1614639992998178
+afcath,inv,gvp,pifold,0.1637055306535134
+afcath,inv,mpnn,gvp,0.20520115496874675
+afcath,inv,mpnn,gvp,0.19576562399546868
+afcath,inv,mpnn,gvp,0.20175968504440484
+afcath,inv,mpnn,gvp,0.2048842365000213
+afcath,inv,mpnn,gvp,0.19411631989793765
+afcath,inv,mpnn,mpnn,0.1640035769634386
+afcath,inv,mpnn,mpnn,0.16315082641485362
+afcath,inv,mpnn,mpnn,0.16551555952117739
+afcath,inv,mpnn,mpnn,0.16415069725962195
+afcath,inv,mpnn,mpnn,0.14626042432338848
+afcath,inv,mpnn,pifold,0.15404979391018814
+afcath,inv,mpnn,pifold,0.15531858962060763
+afcath,inv,mpnn,pifold,0.158234234508143
+afcath,inv,mpnn,pifold,0.15555450117432001
+afcath,inv,mpnn,pifold,0.15081729549398434
+afcath,inv,pifold,gvp,0.20556104000452244
+afcath,inv,pifold,gvp,0.20924110099980497
+afcath,inv,pifold,gvp,0.2175897902406908
+afcath,inv,pifold,gvp,0.21087958017024833
+afcath,inv,pifold,gvp,0.21144498689236427
+afcath,inv,pifold,mpnn,0.15521378456047877
+afcath,inv,pifold,mpnn,0.15874259986477607
+afcath,inv,pifold,mpnn,0.16050393344381425
+afcath,inv,pifold,mpnn,0.15822755570445335
+afcath,inv,pifold,mpnn,0.16031426931302797
+afcath,inv,pifold,pifold,0.15732550742397666
+afcath,inv,pifold,pifold,0.15791845703510343
+afcath,inv,pifold,pifold,0.1599670325188756
+afcath,inv,pifold,pifold,0.16414254454064695
+afcath,inv,pifold,pifold,0.15743176973882925
+afcath,afcath,gvp,gvp,0.5020199933470126
+afcath,afcath,gvp,gvp,0.4909665385263689
+afcath,afcath,gvp,gvp,0.4897356871722446
+afcath,afcath,gvp,gvp,0.49413267570494823
+afcath,afcath,gvp,gvp,0.4992633393251929
+afcath,afcath,gvp,mpnn,0.6982711457103754
+afcath,afcath,gvp,mpnn,0.6982206687433098
+afcath,afcath,gvp,mpnn,0.6955325703564681
+afcath,afcath,gvp,mpnn,0.6910614984786151
+afcath,afcath,gvp,mpnn,0.7066405099383901
+afcath,afcath,gvp,pifold,0.7298659467177304
+afcath,afcath,gvp,pifold,0.7347720171657917
+afcath,afcath,gvp,pifold,0.7251436248455517
+afcath,afcath,gvp,pifold,0.7372426518009264
+afcath,afcath,gvp,pifold,0.7281989158068749
+afcath,afcath,mpnn,gvp,0.3701128629787786
+afcath,afcath,mpnn,gvp,0.3681752644465996
+afcath,afcath,mpnn,gvp,0.3765490311715932
+afcath,afcath,mpnn,gvp,0.37298184406032286
+afcath,afcath,mpnn,gvp,0.36781872298355345
+afcath,afcath,mpnn,mpnn,0.6259889234603998
+afcath,afcath,mpnn,mpnn,0.6421938074601363
+afcath,afcath,mpnn,mpnn,0.6296836397274597
+afcath,afcath,mpnn,mpnn,0.605366927785518
+afcath,afcath,mpnn,mpnn,0.6194113116881494
+afcath,afcath,mpnn,pifold,0.6192627949459599
+afcath,afcath,mpnn,pifold,0.6102419624842388
+afcath,afcath,mpnn,pifold,0.6239920019937921
+afcath,afcath,mpnn,pifold,0.6286624914795587
+afcath,afcath,mpnn,pifold,0.626246854560362
+afcath,afcath,pifold,gvp,0.44215709302042494
+afcath,afcath,pifold,gvp,0.43908337028665856
+afcath,afcath,pifold,gvp,0.43512275032755554
+afcath,afcath,pifold,gvp,0.42885005858724623
+afcath,afcath,pifold,gvp,0.44032132951787506
+afcath,afcath,pifold,mpnn,0.714555547203207
+afcath,afcath,pifold,mpnn,0.6504555132260612
+afcath,afcath,pifold,mpnn,0.7505627670481466
+afcath,afcath,pifold,mpnn,0.6929557083971859
+afcath,afcath,pifold,mpnn,0.6920814641385211
+afcath,afcath,pifold,pifold,0.7691105237395719
+afcath,afcath,pifold,pifold,0.7849027290613857
+afcath,afcath,pifold,pifold,0.7809907008777559
+afcath,afcath,pifold,pifold,0.7819433199033916
+afcath,afcath,pifold,pifold,0.7650087693529233
+affull,inv,gvp,gvp,0.22106354629944844
+affull,inv,gvp,gvp,0.2227606513063988
+affull,inv,gvp,gvp,0.21856308198383312
+affull,inv,gvp,gvp,0.22094399344888124
+affull,inv,gvp,gvp,0.213286982988141
+affull,inv,gvp,mpnn,0.16464526409044075
+affull,inv,gvp,mpnn,0.16796363502195755
+affull,inv,gvp,mpnn,0.1589481275449946
+affull,inv,gvp,mpnn,0.16496484943170828
+affull,inv,gvp,mpnn,0.16384095888327624
+affull,inv,gvp,pifold,0.16420462200939034
+affull,inv,gvp,pifold,0.15364670707680994
+affull,inv,gvp,pifold,0.1541702604017501
+affull,inv,gvp,pifold,0.15919439739373187
+affull,inv,gvp,pifold,0.15384990004274968
+affull,inv,mpnn,gvp,0.20864697731144274
+affull,inv,mpnn,gvp,0.20066617851239424
+affull,inv,mpnn,gvp,0.19550322838490666
+affull,inv,mpnn,gvp,0.2012775527750327
+affull,inv,mpnn,gvp,0.19231174214995517
+affull,inv,mpnn,mpnn,0.16142976380699448
+affull,inv,mpnn,mpnn,0.16576586211198532
+affull,inv,mpnn,mpnn,0.17406233877316862
+affull,inv,mpnn,mpnn,0.1573835417991942
+affull,inv,mpnn,mpnn,0.15690227303805795
+affull,inv,mpnn,pifold,0.1494025755467012
+affull,inv,mpnn,pifold,0.15404708524945224
+affull,inv,mpnn,pifold,0.15396824643339996
+affull,inv,mpnn,pifold,0.1524823145358007
+affull,inv,mpnn,pifold,0.14770108563751327
+affull,inv,pifold,gvp,0.18866123752025366
+affull,inv,pifold,gvp,0.19128260610459008
+affull,inv,pifold,gvp,0.20028120873509356
+affull,inv,pifold,gvp,0.20442054229867168
+affull,inv,pifold,gvp,0.1859142792085374
+affull,inv,pifold,mpnn,0.15343408422968888
+affull,inv,pifold,mpnn,0.1381766123019071
+affull,inv,pifold,mpnn,0.1119340585147194
+affull,inv,pifold,mpnn,0.14760236535035384
+affull,inv,pifold,mpnn,0.13998633808029953
+affull,inv,pifold,pifold,0.14494105700091234
+affull,inv,pifold,pifold,0.1163047140297399
+affull,inv,pifold,pifold,0.13960087082702755
+affull,inv,pifold,pifold,0.143697818701671
+affull,inv,pifold,pifold,0.13830837031405513
+affull,afcath,gvp,gvp,0.5129000729106312
+affull,afcath,gvp,gvp,0.51184413374322
+affull,afcath,gvp,gvp,0.5038093886560997
+affull,afcath,gvp,gvp,0.5148332267862431
+affull,afcath,gvp,gvp,0.5086803475450556
+affull,afcath,gvp,mpnn,0.7198771598626752
+affull,afcath,gvp,mpnn,0.7292676838173422
+affull,afcath,gvp,mpnn,0.7424673281259322
+affull,afcath,gvp,mpnn,0.7231644659878231
+affull,afcath,gvp,mpnn,0.7237177374328367
+affull,afcath,gvp,pifold,0.7522642263363792
+affull,afcath,gvp,pifold,0.768385684307024
+affull,afcath,gvp,pifold,0.736695028734029
+affull,afcath,gvp,pifold,0.7527596981509665
+affull,afcath,gvp,pifold,0.7533875921297002
+affull,afcath,mpnn,gvp,0.3859407173892841
+affull,afcath,mpnn,gvp,0.38381327667750254
+affull,afcath,mpnn,gvp,0.3856393978528524
+affull,afcath,mpnn,gvp,0.38550139105422304
+affull,afcath,mpnn,gvp,0.38865285285462753
+affull,afcath,mpnn,mpnn,0.6497359299476977
+affull,afcath,mpnn,mpnn,0.6373965139280391
+affull,afcath,mpnn,mpnn,0.619635539361057
+affull,afcath,mpnn,mpnn,0.6111705700574561
+affull,afcath,mpnn,mpnn,0.6645043227584151
+affull,afcath,mpnn,pifold,0.6689119310711402
+affull,afcath,mpnn,pifold,0.6453003181826975
+affull,afcath,mpnn,pifold,0.632078516195638
+affull,afcath,mpnn,pifold,0.6576947227307959
+affull,afcath,mpnn,pifold,0.6636544152784827
+affull,afcath,pifold,gvp,0.33981789841251064
+affull,afcath,pifold,gvp,0.3544978693639345
+affull,afcath,pifold,gvp,0.4393645894440514
+affull,afcath,pifold,gvp,0.4103782807533948
+affull,afcath,pifold,gvp,0.3581433615536538
+affull,afcath,pifold,mpnn,0.37038566586165544
+affull,afcath,pifold,mpnn,0.4973697003954578
+affull,afcath,pifold,mpnn,0.6239012652051429
+affull,afcath,pifold,mpnn,0.5592551650646169
+affull,afcath,pifold,mpnn,0.5903423784532538
+affull,afcath,pifold,pifold,0.7295798542238376
+affull,afcath,pifold,pifold,0.768414280858299
+affull,afcath,pifold,pifold,0.7268038038483481
+affull,afcath,pifold,pifold,0.7832533230361223
+affull,afcath,pifold,pifold,0.6975484404494523

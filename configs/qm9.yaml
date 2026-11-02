@@ -7,7 +7,12 @@ loss: l1_loss
 learning_rate: 0.001
 node_level: false
 resolution: atom
+num_layers: 7
+update_coords: false
 benchmark: B_QM9APH
+trainer:
+  epochs: 120
+  patience: 25
 transforms:
   - TokenizeAtoms:
       alphabet: HCNOF

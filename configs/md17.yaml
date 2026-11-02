@@ -1,13 +1,18 @@
 name: md17
-batch_size: 128
+batch_size: 32
 batch_on: molecules
 in_channels: 3
 out_channels: 3
 loss: l1_loss
-learning_rate: 0.001
+learning_rate: 0.0003
 node_level: true
 resolution: atom
+coord_output: true
+num_layers: 7
 benchmark: B_RMDASP
+trainer:
+  epochs: 160
+  patience: 40
 transforms:
   - TokenizeAtoms:
       alphabet: HCO
@@ -18,3 +23,5 @@ transforms:
       resolution: atom
   - LocalReferenceFrames:
       resolution: atom
+  - NormalizeVector:
+      field: atom_force

@@ -1,19 +1,30 @@
 seed: 42
+pairwise: false
+num_voxels: 5
+radius: 10.0
+hidden_dim: 128
+num_layers: 4
+pool: mean
+coord_output: false
+update_coords: true
 globals:
-  workers: 1
+  workers: 5
 trainer:
   backend: TorchBackend
   root: results/${name}
   logger: DiskLogger
   validate_every: 1.0
-  epochs: 3
+  epochs: 100
+  patience: 10
+  save_best: true
   accelerator: gpu
   devices: 1
-  workers: 1
+  workers: 5
   precision: 32
   strategy: auto
   accumulate_gradients: 1
   checkpoint_every: 1
+  clip_grad_norm: 1.0
   batch_size: ${batch_size}
   batch_on: ${batch_on}
   random_seed: ${seed}

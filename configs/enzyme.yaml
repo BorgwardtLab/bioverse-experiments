@@ -1,0 +1,26 @@
+name: enzyme
+batch_size: 32
+batch_on: molecules
+in_channels: 21
+out_channels: 7
+loss: cross_entropy
+learning_rate: 0.0003
+node_level: false
+resolution: residue
+num_layers: 6
+benchmark: B_PSEC00
+trainer:
+  epochs: 40
+  patience: 15
+transforms:
+  - ResiduePositions:
+  - TokenizeResidues:
+  - OneHotResidueFeatures:
+  - TokenizeProperty:
+      field: molecule_ec1
+      alphabet: "1234567"
+  - KnnGraph:
+      k: 30
+      resolution: residue
+  - LocalReferenceFrames:
+      resolution: residue

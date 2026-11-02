@@ -1,10 +1,12 @@
 in_channels: [6, 32]
 transforms:
   - ResiduePositions:
+      mode: CA
   - TokenizeResidues:
   - ResidueBackboneAtoms:
+live_transforms:
   - KnnGraph:
-      k: 8
+      k: 8 # 30 is the default
       resolution: residue
   - Dihedrals:
   - Orientations:

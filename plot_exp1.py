@@ -6,6 +6,7 @@ from typing import DefaultDict, Dict, List, Optional, Tuple
 
 import numpy as np
 import plotly.graph_objects as go
+import yaml
 from plotly.subplots import make_subplots
 
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), "results")
@@ -27,22 +28,89 @@ REPR_LABELS: Dict[str, str] = {
     "point": "Point",
 }
 
-# Prediction tasks: up to six subplots in a 2x3 grid.
+# Prediction tasks: eight subplots in a 2x4 grid.
 # We identify tasks from the benchmark name used in exp1 (qm9, md17, cath42, ...).
 # Known titles for current benchmarks; fall back to the raw name if unknown.
 TASK_TITLES: Dict[str, str] = {
     "qm9": "QM9",
     "md17": "MD17",
     "cath42": "ProteinInvBench",
+    "dock": "BioLiP",
+    "gym": "ProteinGym",
+    "tmalign": "TM-align",
+    "enzyme": "Enzyme Class",
+    "rna": "ARES",
 }
 # Preferred ordering for known tasks; any additional tasks are appended afterwards.
-DEFAULT_TASK_ORDER: List[str] = ["qm9", "md17", "cath42"]
-MAX_TASK_SLOTS = 6
+DEFAULT_TASK_ORDER: List[str] = [
+    "qm9",
+    "md17",
+    "dock",
+    "tmalign",
+    "rna",
+    "enzyme",
+    "gym",
+    "cath42",
+]
+GRID_ROWS = 2
+GRID_COLS = 4
+MAX_TASK_SLOTS = GRID_ROWS * GRID_COLS
+
+# Expected primary metric per task (used for axis labels when results are missing).
+TASK_EXPECTED_METRICS: Dict[str, str] = {
+    "qm9": "MAE",
+    "md17": "Angular MAE",
+    "cath42": "Recovery",
+    "dock": "MAE",
+    "gym": "Spearman",
+    "tmalign": "Spearman",
+    "enzyme": "Accuracy",
+    "rna": "Spearman",
+}
+
+# Subplot metric labels: metric name with units in parentheses (empty if dimensionless).
+TASK_METRIC_LABELS: Dict[str, str] = {
+    "qm9": "MAE (Bohr³)",
+    "md17": "Angular MAE (°)",
+    "tmalign": "Spearman (%)",
+    "dock": "MAE (pKd)",
+    "rna": "Spearman (%)",
+    "enzyme": "Accuracy (%)",
+    "gym": "Spearman (%)",
+    "cath42": "Recovery (%)",
+}
+
+# Preferred metric when multiple are logged for the same run.
+METRIC_PREFERENCE: List[str] = [
+    "Angular MAE",
+    "MAE",
+    "MSE",
+    "Spearman",
+    "Accuracy",
+    "Recovery",
+    "Top-2 Recovery",
+]
 
 # Two shades for the two frameworks, in the spirit of the exp2 color palette
 FRAMEWORK_COLORS: Dict[str, str] = {
     "torch": "rgba(161, 217, 155, 1.0)",  # light green
     "tensorflow": "rgba(49, 163, 84, 1.0)",  # darker green
+}
+
+PERCENT_METRICS = {"Recovery", "Accuracy", "Spearman"}
+
+# Y-axis limits per task. Bounds are in the metric's native units (accuracy /
+# recovery as fractions, MAE as reported). ``"min"`` / ``"max"`` are taken
+# from the plotted values. Percent-displayed metrics are scaled to 0-100.
+TASK_YAXIS_RANGE: Dict[str, Tuple[object, object]] = {
+    "qm9": (0, "max"),
+    "md17": (0, 90),
+    "dock": (0, "max"),
+    "tmalign": (0, 1),
+    "rna": ("min", 1),
+    "enzyme": (0, 1),
+    "gym": (0, 1),
+    "cath42": (0, 1),
 }
 
 
@@ -103,24 +171,106 @@ def read_metric_from_csv(path: str) -> Tuple[Optional[str], Optional[float]]:
     return metric_field, last_value
 
 
+def read_metric_from_yaml(
+    path: str, task_name: Optional[str] = None
+) -> Tuple[Optional[str], Optional[float]]:
+    """Read the preferred test metric from test_results.yaml."""
+    with open(path, "r") as f:
+        data = yaml.safe_load(f)
+
+    if not isinstance(data, dict) or not data:
+        return None, None
+
+    preference: List[str] = []
+    if task_name and task_name in TASK_EXPECTED_METRICS:
+        preference.append(TASK_EXPECTED_METRICS[task_name])
+    preference.extend(m for m in METRIC_PREFERENCE if m not in preference)
+
+    for metric_name in preference:
+        if metric_name in data:
+            try:
+                return metric_name, float(data[metric_name])
+            except (TypeError, ValueError):
+                continue
+
+    metric_name, raw_value = next(iter(data.items()))
+    try:
+        return str(metric_name), float(raw_value)
+    except (TypeError, ValueError):
+        return None, None
+
+
+def read_metric_from_run_dir(
+    run_dir: str, task_name: Optional[str] = None
+) -> Tuple[Optional[str], Optional[float]]:
+    yaml_path = os.path.join(run_dir, "test_results.yaml")
+    if os.path.isfile(yaml_path):
+        return read_metric_from_yaml(yaml_path, task_name=task_name)
+
+    csv_path = os.path.join(run_dir, "test_results.csv")
+    if os.path.isfile(csv_path):
+        return read_metric_from_csv(csv_path)
+
+    return None, None
+
+
+def metric_display_values(metric_name: str, values: List[float]) -> np.ndarray:
+    arr = np.asarray(values, dtype=float)
+    if metric_name in PERCENT_METRICS:
+        return arr * 100.0
+    return arr
+
+
+def yaxis_range(
+    task: str, metric_name: str, values: np.ndarray
+) -> Optional[List[float]]:
+    spec = TASK_YAXIS_RANGE.get(task)
+    if spec is None:
+        return None
+    lo, hi = spec
+    scale = 100.0 if metric_name in PERCENT_METRICS else 1.0
+    has_values = values.size > 0
+
+    def resolve(bound: object, which: str) -> Optional[float]:
+        if bound == "min":
+            if has_values:
+                return float(np.min(values))
+            return -1.0 if which == "lo" else None
+        if bound == "max":
+            if has_values:
+                return float(np.max(values))
+            return None
+        return float(bound) * scale
+
+    ymin = resolve(lo, "lo")
+    ymax = resolve(hi, "hi")
+    if ymin is None or ymax is None or ymin >= ymax:
+        return None
+    if hi == "max":
+        ymax = ymax * 1.05
+    return [ymin, ymax]
+
+
+def yaxis_tickformat(metric_name: str) -> str:
+    name = metric_name.lower()
+    if metric_name in PERCENT_METRICS or "angular" in name:
+        return ".0f"
+    return ".1f"
+
+
 def metric_direction_symbol(metric_name: Optional[str]) -> str:
-    """
-    Heuristic to decide whether higher or lower is better for a given metric name.
-    Returns an arrow symbol.
-    """
+    """Return ↓ if lower is better, ↑ if higher is better."""
     if not metric_name:
         return "?"
 
     name = metric_name.lower()
 
-    # Lower is better
     if any(
         key in name
         for key in ["mae", "mse", "rmse", "loss", "error", "nll", "l1", "l2"]
     ):
         return "↓"
 
-    # Higher is better
     if any(
         key in name
         for key in [
@@ -132,11 +282,67 @@ def metric_direction_symbol(metric_name: Optional[str]) -> str:
             "precision",
             "recall",
             "r2",
+            "spearman",
+            "rho",
         ]
     ):
         return "↑"
 
     return "?"
+
+
+def metric_label(task: Optional[str], metric_names: Dict[str, str]) -> str:
+    metric_name = ""
+    if task:
+        metric_name = metric_names.get(task, "") or TASK_EXPECTED_METRICS.get(task, "")
+
+    if task and task in TASK_METRIC_LABELS:
+        base_label = TASK_METRIC_LABELS[task]
+    elif metric_name:
+        if metric_name in PERCENT_METRICS:
+            base_label = f"{metric_name} (%)"
+        else:
+            base_label = f"{metric_name} ()"
+    else:
+        return "Metric"
+
+    direction = metric_direction_symbol(metric_name)
+    if direction == "?":
+        return base_label
+    return f"{base_label} {direction}"
+
+
+def subplot_title(task: Optional[str], metric_names: Dict[str, str]) -> str:
+    if task is None:
+        return ""
+    title = TASK_TITLES.get(task, task.upper())
+    metric = metric_label(task, metric_names)
+    return f"<b>{title}</b><br>{metric}"
+
+
+def configure_empty_subplot(
+    fig: go.Figure,
+    *,
+    row_idx: int,
+    col_idx: int,
+    tickvals: List[int],
+    ticktext: List[str],
+    y_range: Optional[List[float]] = None,
+    metric_name: str = "",
+) -> None:
+    fig.update_xaxes(
+        tickmode="array",
+        tickvals=tickvals,
+        ticktext=ticktext,
+        tickangle=0,
+        row=row_idx,
+        col=col_idx,
+    )
+    yaxis_kwargs = {"tickformat": yaxis_tickformat(metric_name)}
+    if y_range is not None:
+        yaxis_kwargs["range"] = y_range
+        yaxis_kwargs["autorange"] = False
+    fig.update_yaxes(row=row_idx, col=col_idx, **yaxis_kwargs)
 
 
 def collect_results() -> Tuple[
@@ -154,16 +360,19 @@ def collect_results() -> Tuple[
     )
     metric_names: Dict[str, str] = {}
 
-    pattern = os.path.join(RESULTS_DIR, "exp1_*", "test_results.csv")
-    for path in glob.glob(pattern):
-        exp_dir = os.path.basename(os.path.dirname(path))
+    pattern = os.path.join(RESULTS_DIR, "exp1_*")
+    for run_dir in sorted(glob.glob(pattern)):
+        if not os.path.isdir(run_dir):
+            continue
+
+        exp_dir = os.path.basename(run_dir)
         try:
             framework, repr_name, task_name, _seed = parse_experiment_name(exp_dir)
         except ValueError:
             # Skip folders that do not match the expected exp1 naming
             continue
 
-        metric_name, value = read_metric_from_csv(path)
+        metric_name, value = read_metric_from_run_dir(run_dir, task_name=task_name)
         if metric_name is None or value is None:
             continue
 
@@ -194,7 +403,9 @@ def export_source_data(
                 "value",
             ]
         )
-        for task in sorted(results.keys()):
+        for task in DEFAULT_TASK_ORDER:
+            if task not in results:
+                continue
             metric = metric_names.get(task, "")
             for repr_name in REPRS:
                 for framework in FRAMEWORKS:
@@ -215,56 +426,53 @@ def build_figure(
     results: Dict[str, Dict[str, Dict[str, List[float]]]],
     metric_names: Dict[str, str],
 ) -> go.Figure:
-    # Determine which tasks are present and how to place them into the 2x3 grid
-    tasks_present = list(results.keys())
-
-    # First place known tasks in the preferred order, then any additional tasks
-    ordered_tasks: List[str] = []
-    for t in DEFAULT_TASK_ORDER:
-        if t in tasks_present:
-            ordered_tasks.append(t)
-    for t in sorted(tasks_present):
-        if t not in ordered_tasks:
-            ordered_tasks.append(t)
-
-    # Truncate to available data and then pad with empty slots to 6 total
-    ordered_tasks = ordered_tasks[:MAX_TASK_SLOTS]
+    # Always reserve fixed subplot slots for all planned exp1 tasks.
+    ordered_tasks = DEFAULT_TASK_ORDER[:MAX_TASK_SLOTS]
     task_slots: List[Optional[str]] = list(ordered_tasks)
     while len(task_slots) < MAX_TASK_SLOTS:
         task_slots.append(None)
 
     subplot_titles = [
-        TASK_TITLES.get(task, task.upper()) if task is not None else ""
-        for task in task_slots
+        subplot_title(task, metric_names) for task in task_slots
     ]
 
+    fig_height = 800
+    margin_top = 100
+    margin_bottom = 35
+    legend_y = 1.0 - (margin_top / fig_height) / 2
+
     fig = make_subplots(
-        rows=2,
-        cols=3,
+        rows=GRID_ROWS,
+        cols=GRID_COLS,
         shared_yaxes=False,
-        horizontal_spacing=0.08,
-        vertical_spacing=0.16,
+        horizontal_spacing=0.055,
+        vertical_spacing=0.18,
         subplot_titles=subplot_titles,
     )
 
-    # Configure bar mode and layout (matching the style of plot_exp2.py)
+    # Configure layout (matching the style of plot_exp2.py)
     fig.update_layout(
-        barmode="group",
         template="plotly_white",
+        width=1600,
+        height=fig_height,
         font=dict(
             family="DejaVu Sans Mono, Menlo, Monaco, Consolas, monospace",
-            size=12,
+            size=11,
         ),
         legend=dict(
             title="Framework",
             orientation="h",
-            yanchor="bottom",
-            y=1.05,
+            xref="container",
             xanchor="center",
             x=0.5,
+            yref="container",
+            yanchor="middle",
+            y=legend_y,
         ),
-        margin=dict(l=60, r=20, t=80, b=60),
+        margin=dict(l=50, r=30, t=margin_top, b=margin_bottom),
+        barmode="overlay",
     )
+    fig.update_annotations(font=dict(size=12))
 
     # Numeric x-positions for representations so we can align bars and points
     repr_positions: Dict[str, int] = {
@@ -272,128 +480,130 @@ def build_figure(
     }
     tickvals = [repr_positions[r] for r in REPRS]
     ticktext = [REPR_LABELS[r] for r in REPRS]
-
-    # Horizontal offsets for each framework within a representation group
-    bar_half_width = 0.25
-    framework_offsets: Dict[str, float] = {
-        "torch": -bar_half_width / 2.0,
-        "tensorflow": bar_half_width / 2.0,
-    }
+    if len(FRAMEWORKS) > 1:
+        bar_width = 0.18 * 5 / 3
+        group_spacing = bar_width
+        framework_offsets = {
+            framework: (idx - (len(FRAMEWORKS) - 1) / 2) * group_spacing
+            for idx, framework in enumerate(FRAMEWORKS)
+        }
+    else:
+        framework_offsets = {framework: 0.0 for framework in FRAMEWORKS}
+        bar_width = 0.35 * 5 / 3
 
     # Only show each legend entry once for the whole figure
     show_legend_for_framework: Dict[str, bool] = {fw: True for fw in FRAMEWORKS}
 
     # Fill each task slot (some may be empty if not yet run)
     for slot_idx, task in enumerate(task_slots):
-        row_idx = slot_idx // 3 + 1
-        col_idx = slot_idx % 3 + 1
+        row_idx = slot_idx // GRID_COLS + 1
+        col_idx = slot_idx % GRID_COLS + 1
 
-        if task is None or task not in results:
-            # Leave subplot blank (no data yet)
-            # Still configure axes for consistent appearance
-            fig.update_xaxes(
-                title_text="Representation",
-                tickmode="array",
+        task_metric = (
+            metric_names.get(task, TASK_EXPECTED_METRICS.get(task, ""))
+            if task is not None
+            else ""
+        )
+        plotted: List[float] = []
+
+        if task is None:
+            configure_empty_subplot(
+                fig,
+                row_idx=row_idx,
+                col_idx=col_idx,
                 tickvals=tickvals,
                 ticktext=ticktext,
-                row=row_idx,
-                col=col_idx,
-            )
-            fig.update_yaxes(
-                title_text="Metric",
-                row=row_idx,
-                col=col_idx,
             )
             continue
 
-        metric_name = metric_names.get(task, "")
-        direction_symbol = metric_direction_symbol(metric_name)
-        yaxis_title = metric_name if metric_name else "Metric"
-        if direction_symbol != "?":
-            yaxis_title = f"{yaxis_title} {direction_symbol}"
+        if task not in results:
+            configure_empty_subplot(
+                fig,
+                row_idx=row_idx,
+                col_idx=col_idx,
+                tickvals=tickvals,
+                ticktext=ticktext,
+                y_range=yaxis_range(task, task_metric, np.asarray([])),
+                metric_name=task_metric,
+            )
+            continue
 
-        # Add bars and overlaid scatter points for each framework
         for framework in FRAMEWORKS:
-            means: List[float] = []
-            stds: List[float] = []
-            values_by_repr: List[Tuple[str, np.ndarray]] = []
-
             for repr_name in REPRS:
                 values = results[task][repr_name].get(framework, [])
-                if values:
-                    arr = np.asarray(values, dtype=float)
-                    means.append(float(arr.mean()))
-                    stds.append(float(arr.std(ddof=1)) if arr.size > 1 else 0.0)
-                    values_by_repr.append((repr_name, arr))
-                else:
-                    means.append(np.nan)
-                    stds.append(0.0)
-                    values_by_repr.append((repr_name, np.asarray([], dtype=float)))
-
-            # x-positions for bars for this framework across representations
-            x_bar = [
-                repr_positions[repr_name] + framework_offsets[framework]
-                for repr_name in REPRS
-            ]
-
-            fig.add_trace(
-                go.Bar(
-                    x=x_bar,
-                    y=means,
-                    error_y=dict(
-                        type="data",
-                        array=stds,
-                        visible=True,
-                    ),
-                    name=FRAMEWORK_LABELS[framework],
-                    marker_color=FRAMEWORK_COLORS[framework],
-                    showlegend=show_legend_for_framework[framework],
-                ),
-                row=row_idx,
-                col=col_idx,
-            )
-
-            # Overlay strip/point plot of individual data points (per seed)
-            xs: List[float] = []
-            ys: List[float] = []
-            for repr_name, arr in values_by_repr:
-                if arr.size == 0:
+                if not values:
                     continue
-                x_pos = repr_positions[repr_name] + framework_offsets[framework]
-                xs.extend([x_pos] * len(arr))
-                ys.extend(arr.tolist())
 
-            if xs:
+                arr = metric_display_values(task_metric, values)
+                plotted.extend(arr.tolist())
+                x_pos = repr_positions[repr_name] + framework_offsets[framework]
+                mean = float(np.mean(arr))
+                sem = (
+                    float(np.std(arr, ddof=1) / np.sqrt(len(arr)))
+                    if len(arr) > 1
+                    else 0.0
+                )
+                plotted.append(mean + sem)
+
+                fig.add_trace(
+                    go.Bar(
+                        x=[x_pos],
+                        y=[mean],
+                        name=FRAMEWORK_LABELS[framework],
+                        marker=dict(
+                            color=FRAMEWORK_COLORS[framework],
+                            line=dict(color=FRAMEWORK_COLORS[framework], width=1),
+                        ),
+                        opacity=0.85,
+                        width=bar_width,
+                        error_y=dict(
+                            type="data",
+                            array=[sem],
+                            color="black",
+                            thickness=1,
+                            width=3,
+                        ),
+                        showlegend=show_legend_for_framework[framework],
+                    ),
+                    row=row_idx,
+                    col=col_idx,
+                )
                 fig.add_trace(
                     go.Scatter(
-                        x=xs,
-                        y=ys,
+                        x=[x_pos] * len(arr),
+                        y=arr.tolist(),
                         mode="markers",
                         name=FRAMEWORK_LABELS[framework],
-                        marker=dict(color="rgba(196, 164, 132, 1.0)", size=4),
+                        marker=dict(color="black", size=3),
                         showlegend=False,
                     ),
                     row=row_idx,
                     col=col_idx,
                 )
 
-            # Legend entry already added once
-            show_legend_for_framework[framework] = False
+                show_legend_for_framework[framework] = False
 
-        # Axis styling for this subplot
-        fig.update_yaxes(
-            title_text=yaxis_title,
-            row=row_idx,
-            col=col_idx,
-        )
+        y_range = yaxis_range(task, task_metric, np.asarray(plotted))
+        yaxis_kwargs = {"tickformat": yaxis_tickformat(task_metric)}
+        if y_range is not None:
+            yaxis_kwargs["range"] = y_range
+            yaxis_kwargs["autorange"] = False
+        fig.update_yaxes(row=row_idx, col=col_idx, **yaxis_kwargs)
         fig.update_xaxes(
-            title_text="Representation",
             tickmode="array",
             tickvals=tickvals,
             ticktext=ticktext,
+            tickangle=0,
             row=row_idx,
             col=col_idx,
         )
+
+    fig.update_xaxes(
+        showline=True, mirror=True, linewidth=1, linecolor="#333"
+    )
+    fig.update_yaxes(
+        showline=True, mirror=True, linewidth=1, linecolor="#333"
+    )
 
     return fig
 

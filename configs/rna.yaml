@@ -1,0 +1,27 @@
+name: rna
+batch_size: 32
+batch_on: molecules
+in_channels: 5
+out_channels: 1
+loss: l1_loss
+learning_rate: 0.0003
+node_level: false
+resolution: atom
+num_layers: 4
+update_coords: false
+benchmark: B_RNKRNA
+trainer:
+  epochs: 40
+  patience: 20
+transforms:
+  - TokenizeAtoms:
+      alphabet: HCNOP
+  - OneHotAtomFeatures:
+      alphabet: HCNOP
+  - Standardize:
+      field: molecule_rms
+  - KnnGraph:
+      k: 16
+      resolution: atom
+  - LocalReferenceFrames:
+      resolution: atom

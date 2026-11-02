@@ -7,7 +7,7 @@ transforms:
 live_transforms:
   - ResiduePseudoCb:
   - KnnGraph:
-      k: 30
+      k: 8 # 30 is the default
       resolution: residue
   - ResidueFrames:
   - Dihedrals:
@@ -24,6 +24,8 @@ live_transforms:
       D_max: 20.0
       D_count: 16
       feature_type: pifold
+  - Orientations:
+  - Sidechains:
   - EdgeVectors:
   - Rbf:
   - CreateFeatureFromOthers:

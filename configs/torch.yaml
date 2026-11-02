@@ -9,3 +9,11 @@ model:
     loss: ${loss}
     learning_rate: ${learning_rate}
     resolution: ${resolution}
+    pairwise: ${pairwise}
+    num_voxels: ${num_voxels}
+    radius: ${radius}
+    hidden_dim: ${hidden_dim}
+    num_layers: ${num_layers}
+    pool: ${pool}
+    coord_output: ${coord_output}
+    update_coords: ${update_coords}

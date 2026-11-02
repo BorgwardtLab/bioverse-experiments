@@ -5,7 +5,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import knn_graph
 from torch_geometric.nn.conv import MessagePassing
-from torch_geometric.utils import to_dense_adj, to_dense_batch
+from torch_geometric.utils import degree, to_dense_adj, to_dense_batch
+
+
+def _incoming_degree(edge_index: torch.Tensor, num_nodes: int, dtype: torch.dtype) -> torch.Tensor:
+    """Per-node incoming degree, with isolated nodes clamped to 1."""
+    deg = degree(edge_index[1], num_nodes=num_nodes, dtype=dtype)
+    return deg.clamp(min=1).unsqueeze(-1)
 
 
 class PositionWiseFeedForward(nn.Module):
@@ -27,7 +33,6 @@ class Encoder(MessagePassing):
         in_channels: int,
         hidden_channels: int,
         dropout: float = 0.1,
-        scale: float = 30,
     ) -> None:
         super().__init__(aggr="add", flow="source_to_target")
         self.out_v = nn.Sequential(
@@ -50,7 +55,6 @@ class Encoder(MessagePassing):
         self.norm1 = nn.LayerNorm(hidden_channels)
         self.norm2 = nn.LayerNorm(hidden_channels)
         self.norm3 = nn.LayerNorm(hidden_channels)
-        self.scale = scale
         self.dense = PositionWiseFeedForward(hidden_channels, hidden_channels * 4)
 
     def forward(
@@ -60,7 +64,8 @@ class Encoder(MessagePassing):
         edge_attr: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         h_message = self.propagate(x=x, edge_index=edge_index, edge_attr=edge_attr)
-        dh = h_message / self.scale
+        degree_scale = _incoming_degree(edge_index, x.size(0), h_message.dtype)
+        dh = h_message / degree_scale
         x = self.norm1(x + self.dropout1(dh))
         dh = self.dense(x)
         x = self.norm2(x + self.dropout2(dh))
@@ -85,7 +90,6 @@ class Decoder(MessagePassing):
         in_channels: int,
         hidden_channels: int,
         dropout: float = 0.1,
-        scale: float = 30,
     ) -> None:
         super().__init__(aggr="add", flow="source_to_target")
         self.out_v = nn.Sequential(
@@ -99,7 +103,6 @@ class Decoder(MessagePassing):
         self.dropout2 = nn.Dropout(dropout)
         self.norm1 = nn.LayerNorm(hidden_channels)
         self.norm2 = nn.LayerNorm(hidden_channels)
-        self.scale = scale
         self.dense = PositionWiseFeedForward(hidden_channels, hidden_channels * 4)
 
     def forward(
@@ -124,7 +127,8 @@ class Decoder(MessagePassing):
             edge_attr=edge_attr,
             mask=mask,
         )
-        dh = h_message / self.scale
+        degree_scale = _incoming_degree(edge_index, x.size(0), h_message.dtype)
+        dh = h_message / degree_scale
         x = self.norm1(x + self.dropout1(dh))
         dh = self.dense(x)
         x = self.norm2(x + self.dropout2(dh))

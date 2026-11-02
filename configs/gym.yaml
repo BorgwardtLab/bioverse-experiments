@@ -1,20 +1,24 @@
 name: gym
-batch_size: 128
-batch_on: molecules
-in_channels: 20
-out_channels: 1
-loss: mse_loss
-learning_rate: 0.001
+batch_size: 32
+batch_on: mutations
+in_channels: 21
+out_channels: 20
+loss: l1_loss
+learning_rate: 0.0003
 node_level: true
 resolution: residue
-benchmark: B_PROGYM
+num_layers: 6
+benchmark: B_PROGYM_BLAT_ECOLX
+trainer:
+  clip_grad_norm: 1.0
+  epochs: 60
+  patience: 25
 transforms:
   - ResiduePositions:
   - TokenizeResidues:
   - OneHotResidueFeatures:
-  - ResidueBackboneAtoms:
   - KnnGraph:
-      k: 8
+      k: 30
       resolution: residue
   - LocalReferenceFrames:
       resolution: residue

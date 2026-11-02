@@ -312,6 +312,20 @@ class GVPConvLayer(nn.Module):
         return x
 
 
+def _per_node_vectors(vectors, n_nodes):
+    """Restore GVP's ``(N, K, 3)`` node vectors after long collation.
+
+    Long collation may flatten orientations from ``(N, 2, 3)`` to ``(N*2, 3)``.
+    Sidechains stay ``(N, 3)``. Both become ``(N, K, 3)`` here using the known
+    node count, not a library-wide shape heuristic.
+    """
+    if vectors.ndim == 2:
+        return vectors.reshape(n_nodes, -1, 3)
+    if vectors.shape[0] != n_nodes:
+        return vectors.reshape(n_nodes, -1, 3)
+    return vectors
+
+
 class GvpModel(nn.Module):
     def __init__(
         self,
@@ -320,7 +334,8 @@ class GvpModel(nn.Module):
 
         super().__init__()
 
-        node_in_dim = (in_channels[0], 3)
+        self.node_s_dim = in_channels[0]
+        node_in_dim = (self.node_s_dim, 3)
         node_h_dim = (100, 16)
         edge_in_dim = (in_channels[1], 1)
         edge_h_dim = (32, 1)
@@ -354,12 +369,28 @@ class GvpModel(nn.Module):
         self.W_out = GVP(node_h_dim, (128, 0), activations=(None, None))
 
     def forward(self, data):
-        node_s = data.residue_features.float()
+        if hasattr(data, "residue_features"):
+            node_s = data.residue_features.float()
+        else:
+            n_nodes = data.vertex2molecule.shape[0]
+            node_s = torch.zeros(
+                n_nodes,
+                self.node_s_dim,
+                device=data.vertex2molecule.device,
+                dtype=torch.float,
+            )
+        n_nodes = node_s.shape[0]
         node_v = torch.cat(
-            [data.residue_orientations, data.residue_sidechains.unsqueeze(1)], dim=1
-        ).float()
+            [
+                _per_node_vectors(data.residue_orientations.float(), n_nodes),
+                _per_node_vectors(data.residue_sidechains.float(), n_nodes),
+            ],
+            dim=1,
+        )
         edge_s = data.molecule_edge_features.float()
-        edge_v = data.molecule_edge_vectors.unsqueeze(1).float()
+        edge_v = data.molecule_edge_vectors.float()
+        if edge_v.ndim == 2:
+            edge_v = edge_v.unsqueeze(1)
         edge_index = data.molecule_edges.T
         seq = data.y
         h_V = (node_s, node_v)

@@ -1,4 +1,4 @@
-name: inv
+name: cath42
 batch_size: 32
 batch_on: molecules
 in_channels: 1
@@ -7,13 +7,17 @@ loss: cross_entropy
 learning_rate: 0.001
 node_level: true
 resolution: residue
+num_layers: 6
 benchmark: B_INVC42
+trainer:
+  epochs: 40
+  patience: 15
 transforms:
   - ResiduePositions:
   - TokenizeResidues:
   - ResidueBackboneAtoms:
   - KnnGraph:
-      k: 8
+      k: 30
       resolution: residue
   - LocalReferenceFrames:
       resolution: residue

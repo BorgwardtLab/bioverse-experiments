@@ -4,10 +4,10 @@ transforms:
       mode: CA
   - TokenizeResidues:
   - ResidueBackboneAtoms:
-  - ResiduePseudoCb:
 live_transforms:
+  - ResiduePseudoCb:
   - KnnGraph:
-      k: 30
+      k: 8 # 30 is the default
       resolution: residue
   - ResidueFrames:
   - Dihedrals:
